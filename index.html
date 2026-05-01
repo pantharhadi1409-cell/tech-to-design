@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TechToDesign — Designing Excellence</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --neon-cyan: #00f5ff;
+    --neon-blue: #0066ff;
+    --neon-purple: #8b00ff;
+    --neon-violet: #bf00ff;
+    --dark-bg: #020408;
+    --dark-card: rgba(6,12,24,0.85);
+    --glass: rgba(0,200,255,0.05);
+    --glass-border: rgba(0,200,255,0.15);
+    --text-primary: #e8f4ff;
+    --text-muted: #7a9bb5;
+    --gradient-main: linear-gradient(135deg, #0066ff, #8b00ff, #00f5ff);
+    --gradient-glow: linear-gradient(90deg, #00f5ff, #0066ff, #bf00ff);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9999;
+    transition: transform 0.1s ease;
+    box-shadow: 0 0 12px var(--neon-cyan), 0 0 30px rgba(0,245,255,0.3);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(0,245,255,0.5);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9998;
+    transition: all 0.18s ease;
+  }
+
+  /* ANIMATED BG */
+  .bg-canvas {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,100,255,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(139,0,255,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 10% 60%, rgba(0,245,255,0.08) 0%, transparent 60%),
+                #020408;
+  }
+
+  .grid-overlay {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridDrift 20s linear infinite;
+  }
+  @keyframes gridDrift { 0%{background-position:0 0;} 100%{background-position:60px 60px;} }
+
+  .particles-container { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  .particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: var(--neon-cyan);
+    border-radius: 50%;
+    animation: floatUp linear infinite;
+    opacity: 0;
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(-10vh) translateX(60px); opacity: 0; }
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 60px;
+    background: rgba(2,4,8,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    transition: all 0.3s;
+  }
+  nav.scrolled {
+    padding: 14px 60px;
+    background: rgba(2,4,8,0.95);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 12px;
+    text-decoration: none;
+  }
+  .logo-icon {
+    width: 42px; height: 42px;
+    position: relative;
+  }
+  .logo-icon svg { width: 100%; height: 100%; }
+
+  .logo-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: var(--gradient-glow);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 1px;
+    background: var(--neon-cyan);
+    transition: width 0.3s;
+    box-shadow: 0 0 6px var(--neon-cyan);
+  }
+  .nav-links a:hover { color: var(--neon-cyan); }
+  .nav-links a:hover::after { width: 100%; }
+
+  .nav-cta {
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan) !important;
+    padding: 8px 22px;
+    border-radius: 4px;
+    font-family: 'Orbitron', monospace !important;
+    font-size: 0.72rem !important;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    transition: all 0.3s !important;
+    box-shadow: 0 0 12px rgba(0,245,255,0.15);
+  }
+  .nav-cta:hover {
+    background: rgba(0,245,255,0.1) !important;
+    box-shadow: 0 0 24px rgba(0,245,255,0.35), inset 0 0 24px rgba(0,245,255,0.05) !important;
+  }
+  .nav-cta::after { display: none !important; }
+
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: none; }
+  .hamburger span { width: 24px; height: 2px; background: var(--neon-cyan); border-radius: 2px; transition: all 0.3s; }
+
+  /* SECTIONS WRAPPER */
+  .content { position: relative; z-index: 1; }
+
+  /* ========== HERO ========== */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 120px 60px 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-orbs {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    animation: orbFloat 8s ease-in-out infinite alternate;
+  }
+  .orb-1 { width: 500px; height: 500px; background: #0066ff; top: -100px; left: -100px; animation-delay: 0s; }
+  .orb-2 { width: 400px; height: 400px; background: #8b00ff; bottom: -80px; right: -80px; animation-delay: -3s; }
+  .orb-3 { width: 300px; height: 300px; background: #00f5ff; top: 40%; left: 60%; animation-delay: -5s; }
+  @keyframes orbFloat { 0%{transform:translate(0,0) scale(1);} 100%{transform:translate(30px,30px) scale(1.08);} }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--neon-cyan);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border: 1px solid rgba(0,245,255,0.25);
+    padding: 6px 18px;
+    border-radius: 100px;
+    background: rgba(0,245,255,0.06);
+    margin-bottom: 30px;
+    animation: fadeSlideUp 0.8s ease both;
+  }
+  .hero-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-cyan); animation: blink 1.4s ease infinite; box-shadow: 0 0 6px var(--neon-cyan); }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+  .hero-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2.4rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.12;
+    margin-bottom: 26px;
+    animation: fadeSlideUp 0.9s ease 0.1s both;
+  }
+  .hero-title .line-2 {
+    background: var(--gradient-main);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    filter: drop-shadow(0 0 30px rgba(0,245,255,0.25));
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 540px;
+    margin: 0 auto 46px;
+    line-height: 1.7;
+    font-weight: 400;
+    animation: fadeSlideUp 1s ease 0.2s both;
+  }
+
+  .hero-btns {
+    display: flex; gap: 18px; justify-content: center; flex-wrap: wrap;
+    animation: fadeSlideUp 1s ease 0.3s both;
+  }
+  .btn-primary {
+    padding: 16px 40px;
+    background: linear-gradient(135deg, #0066ff, #8b00ff);
+    border: none;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 6px;
+    cursor: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 0 30px rgba(0,102,255,0.4), 0 0 60px rgba(139,0,255,0.2);
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15));
+    transition: opacity 0.3s;
+  }
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 50px rgba(0,102,255,0.6), 0 0 100px rgba(139,0,255,0.3);
+  }
+  .btn-secondary {
+    padding: 16px 40px;
+    background: transparent;
+    border: 1px solid rgba(0,245,255,0.4);
+    color: var(--neon-cyan);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 6px;
+    cursor: none;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 0 16px rgba(0,245,255,0.1);
+  }
+  .btn-secondary:hover {
+    background: rgba(0,245,255,0.08);
+    box-shadow: 0 0 30px rgba(0,245,255,0.25);
+    transform: translateY(-3px);
+  }
+
+  .hero-stats {
+    display: flex; gap: 60px; justify-content: center; flex-wrap: wrap;
+    margin-top: 80px;
+    animation: fadeSlideUp 1s ease 0.4s both;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 2.2rem;
+    font-weight: 900;
+    background: var(--gradient-glow);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-hint {
+    position: absolute; bottom: 36px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    animation: fadeSlideUp 1s ease 0.6s both;
+  }
+  .scroll-hint span { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); }
+  .scroll-arrow { width: 20px; height: 32px; border: 1.5px solid rgba(0,245,255,0.3); border-radius: 10px; position: relative; }
+  .scroll-arrow::after {
+    content: '';
+    position: absolute; top: 5px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 8px;
+    background: var(--neon-cyan);
+    border-radius: 2px;
+    animation: scrollDot 1.8s ease infinite;
+    box-shadow: 0 0 6px var(--neon-cyan);
+  }
+  @keyframes scrollDot { 0%{top:5px;opacity:1;} 100%{top:14px;opacity:0;} }
+
+  /* ========== SECTIONS SHARED ========== */
+  section { padding: 110px 60px; }
+
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--neon-cyan);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-tag::before { content: ''; width: 30px; height: 1px; background: var(--neon-cyan); box-shadow: 0 0 6px var(--neon-cyan); }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 18px;
+  }
+  .section-title span {
+    background: var(--gradient-glow);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .section-desc { font-size: 1rem; color: var(--text-muted); line-height: 1.75; max-width: 560px; }
+
+  /* ========== ABOUT ========== */
+  #about { background: linear-gradient(180deg, transparent 0%, rgba(0,60,140,0.06) 50%, transparent 100%); }
+
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+    max-width: 1200px; margin: 0 auto;
+  }
+
+  .about-visual {
+    position: relative;
+    height: 420px;
+  }
+  .about-card-main {
+    position: absolute; inset: 0;
+    background: var(--dark-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    padding: 40px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(0,102,255,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+  }
+  .about-card-main::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gradient-glow);
+  }
+
+  .about-ring {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,245,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    animation: rotateRing 12s linear infinite;
+  }
+  .about-ring::before {
+    content: '';
+    position: absolute;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    border: 1px dashed rgba(139,0,255,0.3);
+    animation: rotateRing 8s linear infinite reverse;
+  }
+  .about-ring-inner {
+    width: 120px; height: 120px;
+    background: linear-gradient(135deg, rgba(0,102,255,0.2), rgba(139,0,255,0.2));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(0,245,255,0.3);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    text-align: center;
+    color: var(--neon-cyan);
+    line-height: 1.5;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  @keyframes rotateRing { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+
+  .about-badges {
+    display: flex; gap: 10px; margin-top: 30px; flex-wrap: wrap; justify-content: center;
+  }
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 5px 12px;
+    border-radius: 100px;
+    border: 1px solid;
+    letter-spacing: 0.08em;
+  }
+  .badge-blue { border-color: rgba(0,102,255,0.5); color: #5599ff; background: rgba(0,102,255,0.08); }
+  .badge-purple { border-color: rgba(139,0,255,0.5); color: #cc66ff; background: rgba(139,0,255,0.08); }
+  .badge-cyan { border-color: rgba(0,245,255,0.5); color: var(--neon-cyan); background: rgba(0,245,255,0.08); }
+
+  .about-content { }
+  .about-points { margin-top: 36px; display: flex; flex-direction: column; gap: 20px; }
+  .about-point {
+    display: flex; gap: 16px; align-items: flex-start;
+    padding: 20px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    transition: all 0.3s;
+  }
+  .about-point:hover {
+    background: rgba(0,245,255,0.06);
+    border-color: rgba(0,245,255,0.3);
+    transform: translateX(6px);
+  }
+  .ap-icon {
+    width: 42px; height: 42px; border-radius: 8px;
+    background: linear-gradient(135deg, rgba(0,102,255,0.3), rgba(139,0,255,0.3));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,245,255,0.2);
+  }
+  .ap-text h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
+  .ap-text p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* ========== SERVICES ========== */
+  #services { }
+
+  .services-header { text-align: center; margin-bottom: 70px; }
+  .services-header .section-tag { justify-content: center; }
+  .services-header .section-tag::before { display: none; }
+
+  .services-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px; max-width: 1200px; margin: 0 auto;
+  }
+
+  .service-card {
+    background: var(--dark-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 36px 30px;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    cursor: none;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: var(--gradient-main);
+    opacity: 0;
+    transition: opacity 0.4s;
+    border-radius: 16px;
+  }
+  .service-card::after {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gradient-glow);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+    transform-origin: left;
+  }
+  .service-card:hover {
+    border-color: rgba(0,245,255,0.4);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0,102,255,0.2), 0 0 30px rgba(0,245,255,0.1);
+  }
+  .service-card:hover::after { transform: scaleX(1); }
+
+  .service-icon {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .si-blue { background: linear-gradient(135deg, rgba(0,102,255,0.3), rgba(0,102,255,0.1)); border: 1px solid rgba(0,102,255,0.4); }
+  .si-purple { background: linear-gradient(135deg, rgba(139,0,255,0.3), rgba(139,0,255,0.1)); border: 1px solid rgba(139,0,255,0.4); }
+  .si-cyan { background: linear-gradient(135deg, rgba(0,245,255,0.2), rgba(0,245,255,0.05)); border: 1px solid rgba(0,245,255,0.35); }
+  .si-violet { background: linear-gradient(135deg, rgba(191,0,255,0.25), rgba(191,0,255,0.08)); border: 1px solid rgba(191,0,255,0.4); }
+
+  .service-card h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    position: relative; z-index: 1;
+    letter-spacing: 0.03em;
+  }
+  .service-card p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    position: relative; z-index: 1;
+    margin-bottom: 20px;
+  }
+  .service-tags {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    position: relative; z-index: 1;
+  }
+  .service-tag-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: rgba(0,245,255,0.07);
+    border: 1px solid rgba(0,245,255,0.2);
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* ========== FEATURES ========== */
+  #features {
+    background: linear-gradient(180deg, transparent, rgba(139,0,255,0.04), transparent);
+  }
+
+  .features-layout {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+
+  .features-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+
+  .feature-card {
+    background: var(--dark-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .feature-card:hover {
+    border-color: rgba(0,245,255,0.35);
+    background: rgba(0,245,255,0.04);
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0,102,255,0.15);
+  }
+  .fc-icon { font-size: 2rem; margin-bottom: 14px; display: block; }
+  .feature-card h4 {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+  }
+  .feature-card p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* TERMINAL VISUAL */
+  .terminal {
+    background: rgba(4,8,16,0.9);
+    border: 1px solid rgba(0,245,255,0.2);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0,102,255,0.15), 0 0 100px rgba(139,0,255,0.08);
+  }
+  .terminal-header {
+    background: rgba(0,245,255,0.05);
+    border-bottom: 1px solid rgba(0,245,255,0.1);
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .t-red { background: #ff5f57; }
+  .t-yellow { background: #febc2e; }
+  .t-green { background: #28c840; }
+  .t-title { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text-muted); margin-left: auto; letter-spacing: 0.1em; }
+
+  .terminal-body { padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.9; }
+  .t-line { display: flex; gap: 10px; }
+  .t-prompt { color: #28c840; }
+  .t-cmd { color: #7dd3fc; }
+  .t-comment { color: #555e7a; }
+  .t-output { color: var(--neon-cyan); padding-left: 20px; }
+  .t-success { color: #4ade80; padding-left: 20px; }
+  .t-cursor { display: inline-block; width: 8px; height: 14px; background: var(--neon-cyan); animation: blink 1s step-end infinite; vertical-align: middle; }
+
+  /* ========== LOGO DESIGN ========== */
+  #logo-design { }
+
+  .design-section-inner { max-width: 1200px; margin: 0 auto; }
+  .design-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; margin-top: 60px; }
+
+  .design-form-area {
+    background: var(--dark-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 40px;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+  }
+  .design-form-area::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gradient-glow);
+  }
+  .design-form-area h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    letter-spacing: 0.04em;
+  }
+
+  .form-group { margin-bottom: 20px; }
+  .form-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(0,245,255,0.15);
+    border-radius: 8px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    -webkit-appearance: none;
+    resize: none;
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: rgba(122,155,181,0.5); }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: rgba(0,245,255,0.5);
+    box-shadow: 0 0 20px rgba(0,245,255,0.1);
+  }
+  .form-group textarea { min-height: 100px; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #0066ff, #8b00ff);
+    border: none;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 8px;
+    cursor: none;
+    transition: all 0.3s;
+    box-shadow: 0 0 24px rgba(0,102,255,0.35);
+    margin-top: 8px;
+  }
+  .btn-submit:hover {
+    box-shadow: 0 0 50px rgba(0,102,255,0.5), 0 0 80px rgba(139,0,255,0.25);
+    transform: translateY(-2px);
+  }
+
+  .design-preview-area {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .preview-placeholder {
+    background: var(--dark-card);
+    border: 1px dashed rgba(0,245,255,0.25);
+    border-radius: 16px;
+    height: 280px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 14px;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    transition: all 0.3s;
+    text-align: center;
+    padding: 30px;
+  }
+  .preview-placeholder:hover { border-color: rgba(0,245,255,0.5); background: rgba(0,245,255,0.02); }
+  .preview-icon { font-size: 2.8rem; opacity: 0.5; }
+  .preview-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; }
+
+  /* ========== SHIRT DESIGN ========== */
+  #shirt-design { background: linear-gradient(180deg, transparent, rgba(0,60,140,0.05), transparent); }
+
+  .shirt-preview {
+    background: var(--dark-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 40px;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+  }
+  .shirt-mockup {
+    width: 180px; height: 200px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .shirt-mockup svg { width: 100%; height: 100%; }
+
+  .shirt-colors { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .color-swatch {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    cursor: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  .color-swatch:hover, .color-swatch.active { transform: scale(1.25); box-shadow: 0 0 12px rgba(0,245,255,0.5); border-color: var(--neon-cyan); }
+
+  /* ========== CONTACT ========== */
+  #contact { }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+    max-width: 1200px; margin: 60px auto 0;
+  }
+
+  .chat-mockup {
+    background: var(--dark-card);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+  }
+  .chat-header {
+    padding: 20px 24px;
+    background: linear-gradient(90deg, rgba(0,102,255,0.15), rgba(139,0,255,0.15));
+    border-bottom: 1px solid var(--glass-border);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .chat-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0066ff, #8b00ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 0 14px rgba(0,102,255,0.4);
+  }
+  .chat-info h4 { font-size: 0.88rem; font-weight: 600; }
+  .chat-status { font-size: 0.7rem; color: #4ade80; display: flex; align-items: center; gap: 5px; }
+  .chat-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 6px #4ade80; }
+
+  .chat-body { padding: 20px; display: flex; flex-direction: column; gap: 14px; min-height: 280px; }
+  .chat-bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .bubble-agent {
+    background: rgba(0,102,255,0.15);
+    border: 1px solid rgba(0,102,255,0.25);
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    color: var(--text-primary);
+  }
+  .bubble-user {
+    background: rgba(139,0,255,0.15);
+    border: 1px solid rgba(139,0,255,0.25);
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+    color: var(--text-primary);
+  }
+  .bubble-time { font-size: 0.62rem; color: var(--text-muted); margin-top: 4px; }
+
+  .chat-typing { display: flex; gap: 5px; align-items: center; padding: 8px 0; }
+  .typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--neon-cyan); animation: typingBounce 1.2s ease infinite; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingBounce { 0%,80%,100%{transform:translateY(0);opacity:0.4;} 40%{transform:translateY(-6px);opacity:1;} }
+
+  .chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid var(--glass-border);
+    display: flex; gap: 12px; align-items: center;
+  }
+  .chat-input {
+    flex: 1;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(0,245,255,0.15);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    outline: none;
+  }
+  .chat-send {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #0066ff, #8b00ff);
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    cursor: none;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    box-shadow: 0 0 14px rgba(0,102,255,0.4);
+  }
+  .chat-send:hover { transform: scale(1.1); box-shadow: 0 0 24px rgba(0,102,255,0.6); }
+
+  .call-btn-wrapper {
+    display: flex; flex-direction: column; gap: 14px; margin-top: 20px;
+  }
+  .call-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 24px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .call-btn:hover {
+    background: rgba(0,245,255,0.06);
+    border-color: rgba(0,245,255,0.4);
+    transform: translateX(6px);
+    box-shadow: 0 0 20px rgba(0,245,255,0.1);
+  }
+  .call-btn-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(0,102,255,0.3), rgba(139,0,255,0.3));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,245,255,0.2);
+  }
+  .call-btn-text span { display: block; font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; font-weight: 400; }
+
+  /* ========== FOOTER ========== */
+  footer {
+    padding: 60px;
+    border-top: 1px solid var(--glass-border);
+    background: rgba(2,4,8,0.9);
+    backdrop-filter: blur(20px);
+  }
+  .footer-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+  }
+  .footer-brand .logo-text { font-size: 1.2rem; }
+  .footer-tagline { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 8px; }
+  .footer-desc { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; margin-top: 18px; max-width: 280px; }
+  .footer-socials { display: flex; gap: 12px; margin-top: 24px; }
+  .social-link {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: none;
+  }
+  .social-link:hover { border-color: rgba(0,245,255,0.4); color: var(--neon-cyan); background: rgba(0,245,255,0.08); box-shadow: 0 0 12px rgba(0,245,255,0.2); }
+  .footer-col h5 {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: var(--neon-cyan);
+  }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    transition: color 0.3s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .footer-links a::before { content: '›'; color: rgba(0,245,255,0.4); font-size: 1rem; }
+  .footer-links a:hover { color: var(--neon-cyan); }
+  .footer-bottom {
+    max-width: 1200px; margin: 40px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--glass-border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* REVEAL ANIMATIONS */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-left { opacity: 0; transform: translateX(-30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right { opacity: 0; transform: translateX(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* MOBILE NAV */
+  .mobile-nav {
+    display: none;
+    position: fixed; inset: 0; z-index: 99;
+    background: rgba(2,4,8,0.97);
+    backdrop-filter: blur(30px);
+    flex-direction: column; align-items: center; justify-content: center;
+    gap: 36px;
+  }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav a {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    transition: color 0.3s;
+  }
+  .mobile-nav a:hover { color: var(--neon-cyan); }
+  .mobile-close {
+    position: absolute; top: 24px; right: 24px;
+    background: none; border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: none;
+    transition: color 0.3s;
+  }
+  .mobile-close:hover { color: var(--neon-cyan); }
+
+  /* RESPONSIVE */
+  @media (max-width: 1024px) {
+    nav { padding: 18px 30px; }
+    section { padding: 80px 30px; }
+    #hero { padding: 100px 30px 80px; }
+    .about-grid, .features-layout, .design-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .about-visual { height: 300px; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 40px; }
+  }
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .hero-stats { gap: 30px; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .footer-inner { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+    footer { padding: 50px 24px; }
+  }
+  @media (max-width: 480px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .hero-btns { flex-direction: column; align-items: center; }
+    .services-grid { grid-template-columns: 1fr; }
+    .stat-num { font-size: 1.7rem; }
+  }
+
+  /* GLOW PULSE */
+  @keyframes glowPulse { 0%,100%{box-shadow:0 0 20px rgba(0,245,255,0.2);} 50%{box-shadow:0 0 40px rgba(0,245,255,0.5);} }
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div class="bg-canvas"></div>
+<div class="grid-overlay"></div>
+<div class="particles-container" id="particles"></div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lg1" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#00f5ff"/>
+            <stop offset="50%" stop-color="#0066ff"/>
+            <stop offset="100%" stop-color="#8b00ff"/>
+          </linearGradient>
+        </defs>
+        <!-- Abstract digital wave / T shape mark -->
+        <rect x="1" y="1" width="40" height="40" rx="8" stroke="url(#lg1)" stroke-width="1.2" fill="rgba(0,102,255,0.08)"/>
+        <path d="M9 14 H33 M21 14 V30" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="21" cy="30" r="3" fill="url(#lg1)" opacity="0.9"/>
+        <circle cx="9" cy="14" r="2" fill="#00f5ff" opacity="0.7"/>
+        <circle cx="33" cy="14" r="2" fill="#8b00ff" opacity="0.7"/>
+        <path d="M9 22 Q15 18 21 22 Q27 26 33 22" stroke="url(#lg1)" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.5"/>
+      </svg>
+    </div>
+    <span class="logo-text">TechToDesign</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#logo-design">Logo</a></li>
+    <li><a href="#shirt-design">Merch</a></li>
+    <li><a href="#contact" class="nav-cta">Get Started</a></li>
+  </ul>
+
+  <div class="hamburger" id="hamburger" onclick="toggleMobileNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-close" onclick="toggleMobileNav()">✕</button>
+  <a href="#about" onclick="toggleMobileNav()">About</a>
+  <a href="#services" onclick="toggleMobileNav()">Services</a>
+  <a href="#features" onclick="toggleMobileNav()">Features</a>
+  <a href="#logo-design" onclick="toggleMobileNav()">Logo Design</a>
+  <a href="#shirt-design" onclick="toggleMobileNav()">Merch Design</a>
+  <a href="#contact" onclick="toggleMobileNav()">Contact</a>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ====== HERO ====== -->
+  <section id="hero">
+    <div class="hero-bg-orbs">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <div>
+      <div class="hero-tag">
+        <span class="dot"></span>
+        Available 24/7 — Real Human Experts
+      </div>
+      <h1 class="hero-title">
+        We Build the Future<br>
+        <span class="line-2">of Digital Experiences</span>
+      </h1>
+      <p class="hero-sub">Powered by skilled professionals and creative experts who turn your vision into extraordinary digital reality.</p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn-primary">Start Your Project</a>
+        <a href="#services" class="btn-secondary">Explore Services</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num" data-count="500">0</div>
+          <div class="stat-label">Projects Delivered</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-count="98">0</div>
+          <div class="stat-label">Client Satisfaction %</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-count="24">0</div>
+          <div class="stat-label">Hour Support</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num" data-count="12">0</div>
+          <div class="stat-label">Languages Supported</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+  </section>
+
+  <!-- ====== ABOUT ====== -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-visual reveal-left">
+        <div class="about-card-main">
+          <div class="about-ring">
+            <div class="about-ring-inner">24 / 7<br>Expert<br>Support</div>
+          </div>
+          <div class="about-badges">
+            <span class="badge badge-blue">Full Stack</span>
+            <span class="badge badge-purple">UI/UX Design</span>
+            <span class="badge badge-cyan">Call Center</span>
+            <span class="badge badge-blue">Merch Design</span>
+            <span class="badge badge-purple">Logo Art</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-content reveal-right">
+        <div class="section-tag">About Us</div>
+        <h2 class="section-title">A Professional Agency <span>Backed by Real Humans</span></h2>
+        <p class="section-desc">TechToDesign is a professional call center and digital agency — not an automated platform. Every project is handled by trained, experienced specialists who bring creativity and technical precision to every deliverable.</p>
+        <div class="about-points">
+          <div class="about-point">
+            <div class="ap-icon">🎯</div>
+            <div class="ap-text">
+              <h4>Expert Human Team</h4>
+              <p>Every service is delivered by skilled professionals — developers, designers, and creative specialists with years of real-world experience.</p>
+            </div>
+          </div>
+          <div class="about-point">
+            <div class="ap-icon">📞</div>
+            <div class="ap-text">
+              <h4>24/7 Customer Support</h4>
+              <p>Our call center agents are available around the clock to handle your project requirements, answer questions, and ensure seamless delivery.</p>
+            </div>
+          </div>
+          <div class="about-point">
+            <div class="ap-icon">⚡</div>
+            <div class="ap-text">
+              <h4>Fast, Reliable Delivery</h4>
+              <p>We prioritize your timelines without compromising quality — combining agile workflows with dedicated project managers for every client.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SERVICES ====== -->
+  <section id="services">
+    <div class="services-header reveal">
+      <div class="section-tag">What We Do</div>
+      <h2 class="section-title">Our <span>Core Services</span></h2>
+      <p class="section-desc" style="margin:0 auto;">From code to creative — we cover every facet of your digital presence with expert hands-on craftsmanship.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-icon si-blue">🌐</div>
+        <h3>Web Development</h3>
+        <p>We build powerful, scalable web applications in any language you need — from blazing-fast frontends to robust backend architectures.</p>
+        <div class="service-tags">
+          <span class="service-tag-chip">Python</span>
+          <span class="service-tag-chip">PHP</span>
+          <span class="service-tag-chip">JavaScript</span>
+          <span class="service-tag-chip">Node.js</span>
+          <span class="service-tag-chip">React</span>
+          <span class="service-tag-chip">Laravel</span>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon si-purple">⚙️</div>
+        <h3>Full Stack Development</h3>
+        <p>End-to-end engineering — we architect and develop complete solutions that connect your frontend experience with powerful backend logic and databases.</p>
+        <div class="service-tags">
+          <span class="service-tag-chip">Frontend</span>
+          <span class="service-tag-chip">Backend</span>
+          <span class="service-tag-chip">REST APIs</span>
+          <span class="service-tag-chip">Databases</span>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon si-cyan">🎨</div>
+        <h3>Logo & Digital Art</h3>
+        <p>Custom logos and brand identities crafted by professional designers. From minimal marks to elaborate visual systems — your brand, perfected.</p>
+        <div class="service-tags">
+          <span class="service-tag-chip">Brand Identity</span>
+          <span class="service-tag-chip">Vector Art</span>
+          <span class="service-tag-chip">Digital Illustration</span>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-icon si-violet">👕</div>
+        <h3>Shirt & Merch Design</h3>
+        <p>Turn your ideas into wearable art. We design custom apparel — t-shirts, hoodies, brand merchandise — ready for print and production.</p>
+        <div class="service-tags">
+          <span class="service-tag-chip">T-Shirts</span>
+          <span class="service-tag-chip">Hoodies</span>
+          <span class="service-tag-chip">Brand Prints</span>
+          <span class="service-tag-chip">Merch Kits</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FEATURES ====== -->
+  <section id="features">
+    <div class="features-layout">
+      <div class="reveal-left">
+        <div class="section-tag">Why Choose Us</div>
+        <h2 class="section-title">Built on<br><span>Human Expertise</span></h2>
+        <p class="section-desc">We don't rely on automation. Every feature, every design, every line of code is crafted by trained specialists who care about quality.</p>
+
+        <!-- TERMINAL -->
+        <div class="terminal" style="margin-top:36px;">
+          <div class="terminal-header">
+            <div class="t-dot t-red"></div>
+            <div class="t-dot t-yellow"></div>
+            <div class="t-dot t-green"></div>
+            <span class="t-title">techtodesign ~ project-init</span>
+          </div>
+          <div class="terminal-body">
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">ttd init --project="MyApp"</span></div>
+            <div class="t-line"><span class="t-output">✦ Connecting to expert team...</span></div>
+            <div class="t-line"><span class="t-output">✦ Assigning lead developer...</span></div>
+            <div class="t-line"><span class="t-output">✦ Configuring project scope...</span></div>
+            <div class="t-line"><span class="t-success">✔ Expert team assigned successfully</span></div>
+            <div class="t-line"><span class="t-comment"># Stack: React + Node + PostgreSQL</span></div>
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-cmd">ttd start<span class="t-cursor"></span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="features-grid reveal-right">
+        <div class="feature-card">
+          <span class="fc-icon">👥</span>
+          <h4>Expert Human Team</h4>
+          <p>Trained professionals who deliver with precision and passion.</p>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🌍</span>
+          <h4>Multi-Language Dev</h4>
+          <p>We code in any language your project demands.</p>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">⚡</span>
+          <h4>Fast Delivery</h4>
+          <p>Agile workflows ensure your deadlines are always met.</p>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">✏️</span>
+          <h4>Fully Custom</h4>
+          <p>Zero templates. Every design is built from scratch for you.</p>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">🛡️</span>
+          <h4>Secure & Scalable</h4>
+          <p>Enterprise-grade code built to grow with your business.</p>
+        </div>
+        <div class="feature-card">
+          <span class="fc-icon">📞</span>
+          <h4>24/7 Support</h4>
+          <p>Always-on agents ready to assist you any time, any day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== LOGO DESIGN ====== -->
+  <section id="logo-design">
+    <div class="design-section-inner">
+      <div class="reveal" style="text-align:center; margin-bottom:10px;">
+        <div class="section-tag" style="justify-content:center;"><span style="display:none"></span>Logo Design Request</div>
+        <h2 class="section-title">Describe Your <span>Dream Logo</span></h2>
+        <p class="section-desc" style="margin:0 auto;">Tell us your vision and our designers will turn it into a premium, professional identity mark.</p>
+      </div>
+      <div class="design-grid">
+        <div class="design-form-area reveal-left">
+          <h3>🎨 Logo Design Request</h3>
+          <div class="form-group">
+            <label>Company / Brand Name</label>
+            <input type="text" placeholder="e.g. TechToDesign"/>
+          </div>
+          <div class="form-group">
+            <label>Describe Your Logo Idea</label>
+            <textarea placeholder="e.g. A minimal futuristic logo with a digital wave symbol, blue and purple color palette, clean and modern look..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Style Preference</label>
+            <select>
+              <option value="">Select a style...</option>
+              <option>Minimal & Modern</option>
+              <option>Futuristic / Tech</option>
+              <option>Luxury / Premium</option>
+              <option>Playful / Creative</option>
+              <option>Bold & Geometric</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Your Email</label>
+            <input type="email" placeholder="you@example.com"/>
+          </div>
+          <button class="btn-submit" onclick="submitRequest(this, 'logo')">Submit Logo Request</button>
+        </div>
+        <div class="design-preview-area reveal-right">
+          <div class="preview-placeholder" id="logoPreview">
+            <span class="preview-icon">⬡</span>
+            <span class="preview-label">Logo Preview Area</span>
+            <span style="font-size:0.75rem;color:var(--text-muted);max-width:220px;text-align:center;">Your custom logo concept will appear here after submission. Our team reviews requests within 2–4 hours.</span>
+          </div>
+          <div class="preview-placeholder" style="height:160px; flex-direction:row; gap:20px;">
+            <!-- Example logo marks -->
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+              <circle cx="30" cy="30" r="28" stroke="url(#lg1)" stroke-width="1.5" fill="rgba(0,100,255,0.08)"/>
+              <path d="M20 30 Q30 18 40 30" stroke="#00f5ff" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M20 35 Q30 23 40 35" stroke="#8b00ff" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <circle cx="30" cy="40" r="4" fill="url(#lg1)"/>
+            </svg>
+            <div style="text-align:left;">
+              <div style="font-family:'Orbitron',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">Sample Styles</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                <span class="badge badge-cyan">Minimal</span>
+                <span class="badge badge-blue">Geometric</span>
+                <span class="badge badge-purple">Abstract</span>
+                <span class="badge badge-cyan">Wordmark</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== SHIRT DESIGN ====== -->
+  <section id="shirt-design">
+    <div class="design-section-inner">
+      <div class="reveal" style="text-align:center; margin-bottom:10px;">
+        <div class="section-tag" style="justify-content:center;">Merch Design</div>
+        <h2 class="section-title">Custom <span>Apparel & Merch</span></h2>
+        <p class="section-desc" style="margin:0 auto;">From bold graphic tees to branded hoodies — we design apparel that makes your brand impossible to ignore.</p>
+      </div>
+      <div class="design-grid">
+        <div class="design-form-area reveal-left">
+          <h3>👕 Shirt Design Request</h3>
+          <div class="form-group">
+            <label>Brand / Event Name</label>
+            <input type="text" placeholder="e.g. TechToDesign Crew"/>
+          </div>
+          <div class="form-group">
+            <label>Describe Your Shirt Design</label>
+            <textarea placeholder="e.g. A dark hoodie with neon circuit board pattern on the back, logo on the chest, futuristic vibe..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Garment Type</label>
+            <select>
+              <option>T-Shirt</option>
+              <option>Hoodie</option>
+              <option>Polo Shirt</option>
+              <option>Jacket</option>
+              <option>Full Merch Kit</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Your Email</label>
+            <input type="email" placeholder="you@example.com"/>
+          </div>
+          <button class="btn-submit" onclick="submitRequest(this, 'shirt')">Submit Design Request</button>
+        </div>
+        <div class="design-preview-area reveal-right">
+          <div class="shirt-preview">
+            <h4 style="font-family:'Orbitron',monospace;font-size:0.78rem;font-weight:700;letter-spacing:0.06em;align-self:flex-start;">Mockup Preview</h4>
+            <!-- T-shirt SVG mockup -->
+            <div class="shirt-mockup">
+              <svg viewBox="0 0 180 200" fill="none" xmlns="http://www.w3.org/2000/svg" id="shirtSVG">
+                <defs>
+                  <linearGradient id="shirtGrad" x1="0" y1="0" x2="180" y2="200" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#0d1a2e"/>
+                    <stop offset="100%" stop-color="#060c1a"/>
+                  </linearGradient>
+                </defs>
+                <!-- Body -->
+                <path d="M55 40 L20 65 L35 80 L35 180 H145 L145 80 L160 65 L125 40 Q110 55 90 55 Q70 55 55 40Z" 
+                      fill="url(#shirtGrad)" stroke="rgba(0,245,255,0.25)" stroke-width="1.5"/>
+                <!-- Collar -->
+                <path d="M75 42 Q90 60 105 42" fill="none" stroke="rgba(0,245,255,0.4)" stroke-width="1.5"/>
+                <!-- Logo area -->
+                <g transform="translate(75, 90)">
+                  <rect width="30" height="30" rx="6" fill="rgba(0,102,255,0.15)" stroke="rgba(0,245,255,0.3)" stroke-width="1"/>
+                  <text x="15" y="20" fill="rgba(0,245,255,0.8)" font-size="14" text-anchor="middle" font-family="monospace">T2D</text>
+                </g>
+                <!-- Sleeve lines -->
+                <path d="M20 65 L35 80" stroke="rgba(0,245,255,0.15)" stroke-width="1"/>
+                <path d="M160 65 L145 80" stroke="rgba(0,245,255,0.15)" stroke-width="1"/>
+              </svg>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;">Select Color</div>
+              <div class="shirt-colors" id="shirtColors">
+                <div class="color-swatch active" style="background:#060c1a;" data-color="#060c1a" onclick="changeShirtColor(this)"></div>
+                <div class="color-swatch" style="background:#0d2040;" data-color="#0d2040" onclick="changeShirtColor(this)"></div>
+                <div class="color-swatch" style="background:#1a0038;" data-color="#1a0038" onclick="changeShirtColor(this)"></div>
+                <div class="color-swatch" style="background:#1a1a1a;" data-color="#1a1a1a" onclick="changeShirtColor(this)"></div>
+                <div class="color-swatch" style="background:#fff;" data-color="#eef4ff" onclick="changeShirtColor(this)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CONTACT ====== -->
+  <section id="contact">
+    <div style="max-width:1200px; margin:0 auto;">
+      <div class="reveal" style="text-align:center;">
+        <div class="section-tag" style="justify-content:center;">Get In Touch</div>
+        <h2 class="section-title">Talk to <span>Our Team</span></h2>
+        <p class="section-desc" style="margin:0 auto;">Start a live chat, book a call, or send us a message. We're always on — because great projects don't wait for business hours.</p>
+      </div>
+      <div class="contact-grid">
+        <!-- CHAT MOCKUP -->
+        <div class="reveal-left">
+          <div class="chat-mockup">
+            <div class="chat-header">
+              <div class="chat-avatar">🤝</div>
+              <div class="chat-info">
+                <h4>TechToDesign Support</h4>
+                <div class="chat-status">Online — Avg. reply in &lt;2 min</div>
+              </div>
+            </div>
+            <div class="chat-body">
+              <div class="chat-bubble bubble-agent">
+                Hey! 👋 Welcome to TechToDesign. What can we build for you today?
+                <div class="bubble-time">Just now</div>
+              </div>
+              <div class="chat-bubble bubble-user">
+                I need a full-stack web app with a custom logo.
+                <div class="bubble-time">Just now</div>
+              </div>
+              <div class="chat-bubble bubble-agent">
+                Perfect! Our team specializes in exactly that. Let me connect you with a specialist right away.
+                <div class="bubble-time">Just now</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding-left:4px;">
+                <div class="chat-avatar" style="width:28px;height:28px;font-size:0.7rem;">🤝</div>
+                <div class="chat-typing">
+                  <div class="typing-dot"></div>
+                  <div class="typing-dot"></div>
+                  <div class="typing-dot"></div>
+                </div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <input class="chat-input" type="text" placeholder="Type your message..."/>
+              <button class="chat-send">➤</button>
+            </div>
+          </div>
+
+          <div class="call-btn-wrapper" style="margin-top:20px;">
+            <a href="#" class="call-btn">
+              <div class="call-btn-icon">📞</div>
+              <div class="call-btn-text">
+                Call Our Team
+                <span>Available 24/7 — No wait time</span>
+              </div>
+            </a>
+            <a href="#" class="call-btn">
+              <div class="call-btn-icon">💬</div>
+              <div class="call-btn-text">
+                WhatsApp Chat
+                <span>Quick responses on WhatsApp</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- CONTACT FORM -->
+        <div class="design-form-area reveal-right">
+          <h3>✉️ Send Us a Message</h3>
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" placeholder="John Doe"/>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" placeholder="john@company.com"/>
+          </div>
+          <div class="form-group">
+            <label>Service Needed</label>
+            <select>
+              <option>Web Development</option>
+              <option>Full Stack Development</option>
+              <option>Logo & Brand Design</option>
+              <option>Shirt / Merch Design</option>
+              <option>Multiple Services</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tell us about your project</label>
+            <textarea placeholder="Describe your project, goals, budget, and timeline..."></textarea>
+          </div>
+          <button class="btn-submit" onclick="submitRequest(this, 'contact')">Send Message</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="nav-logo" style="display:flex;align-items:center;gap:12px;text-decoration:none;">
+          <div class="logo-icon" style="width:36px;height:36px;">
+            <svg viewBox="0 0 42 42" fill="none"><defs><linearGradient id="lg2" x1="0" y1="0" x2="42" y2="42" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00f5ff"/><stop offset="50%" stop-color="#0066ff"/><stop offset="100%" stop-color="#8b00ff"/></linearGradient></defs><rect x="1" y="1" width="40" height="40" rx="8" stroke="url(#lg2)" stroke-width="1.2" fill="rgba(0,102,255,0.08)"/><path d="M9 14 H33 M21 14 V30" stroke="url(#lg2)" stroke-width="2.5" stroke-linecap="round"/><circle cx="21" cy="30" r="3" fill="url(#lg2)" opacity="0.9"/><circle cx="9" cy="14" r="2" fill="#00f5ff" opacity="0.7"/><circle cx="33" cy="14" r="2" fill="#8b00ff" opacity="0.7"/><path d="M9 22 Q15 18 21 22 Q27 26 33 22" stroke="url(#lg2)" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.5"/></svg>
+          </div>
+          <span class="logo-text" style="font-size:1.1rem;">TechToDesign</span>
+        </div>
+        <div class="footer-tagline">Designing Excellence</div>
+        <p class="footer-desc">A professional call center and digital agency where real human experts deliver extraordinary web development, design, and creative solutions — 24/7.</p>
+        <div class="footer-socials">
+          <a href="#" class="social-link">𝕏</a>
+          <a href="#" class="social-link">in</a>
+          <a href="#" class="social-link">ig</a>
+          <a href="#" class="social-link">gh</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul class="footer-links">
+          <li><a href="#services">Web Development</a></li>
+          <li><a href="#services">Full Stack Dev</a></li>
+          <li><a href="#logo-design">Logo Design</a></li>
+          <li><a href="#shirt-design">Merch Design</a></li>
+          <li><a href="#services">Digital Art</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul class="footer-links">
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#features">Why Us</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#">Portfolio</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Support</h5>
+        <ul class="footer-links">
+          <li><a href="#">Live Chat</a></li>
+          <li><a href="#">WhatsApp</a></li>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 TechToDesign. All rights reserved.</span>
+      <span style="background:var(--gradient-glow);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Designing Excellence — Powered by Human Experts</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // === CURSOR ===
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx - 5 + 'px'; cursor.style.top = my - 5 + 'px'; });
+  function animRing() { rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15; ring.style.left = rx - 18 + 'px'; ring.style.top = ry - 18 + 'px'; requestAnimationFrame(animRing); }
+  animRing();
+  document.querySelectorAll('a, button, .service-card, .feature-card, .about-point, .call-btn, .color-swatch').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2)'; ring.style.transform = 'scale(1.5)'; ring.style.borderColor = 'rgba(0,245,255,0.8)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; ring.style.borderColor = 'rgba(0,245,255,0.5)'; });
+  });
+
+  // === NAV SCROLL ===
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // === MOBILE NAV ===
+  function toggleMobileNav() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+
+  // === PARTICLES ===
+  const pc = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `left:${Math.random()*100}%;width:${Math.random()*3+1}px;height:${Math.random()*3+1}px;animation-duration:${Math.random()*15+8}s;animation-delay:${Math.random()*15}s;opacity:0;`;
+    if (Math.random() > 0.5) { p.style.background = '#0066ff'; }
+    if (Math.random() > 0.7) { p.style.background = '#8b00ff'; }
+    pc.appendChild(p);
+  }
+
+  // === SCROLL REVEAL ===
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+  // === COUNT UP ===
+  function countUp(el, target) {
+    let count = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      count = Math.min(count + step, target);
+      el.textContent = Math.floor(count) + (target === 98 ? '' : target === 24 ? '' : '+');
+      if (count >= target) { el.textContent = target + (target !== 24 ? '+' : '/7'); clearInterval(timer); }
+    }, 25);
+  }
+  const statsObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        document.querySelectorAll('[data-count]').forEach(el => countUp(el, parseInt(el.dataset.count)));
+        statsObs.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+  const statsSection = document.querySelector('.hero-stats');
+  if (statsSection) statsObs.observe(statsSection);
+
+  // === SHIRT COLOR ===
+  function changeShirtColor(el) {
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    const svg = document.getElementById('shirtSVG');
+    const path = svg.querySelector('path');
+    const color = el.dataset.color;
+    const isLight = color === '#eef4ff';
+    svg.querySelectorAll('stop')[0].setAttribute('stop-color', isLight ? '#d0e8ff' : color);
+    svg.querySelectorAll('stop')[1].setAttribute('stop-color', isLight ? '#b8d4f8' : color);
+    svg.querySelector('text').setAttribute('fill', isLight ? 'rgba(0,50,150,0.8)' : 'rgba(0,245,255,0.8)');
+  }
+
+  // === FORM SUBMIT ===
+  function submitRequest(btn, type) {
+    const orig = btn.textContent;
+    btn.textContent = '⟳ Submitting...';
+    btn.style.opacity = '0.7';
+    setTimeout(() => {
+      btn.textContent = '✓ Request Sent!';
+      btn.style.background = 'linear-gradient(135deg, #059669, #047857)';
+      btn.style.opacity = '1';
+      setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 3000);
+    }, 1400);
+  }
+
+  // === PARALLAX ===
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    document.querySelectorAll('.orb').forEach((orb, i) => {
+      orb.style.transform = `translate(${Math.sin(y/300+i)*20}px, ${y * 0.08 * (i+1) * 0.5}px) scale(${1 + Math.sin(y/400)*0.05})`;
+    });
+  });
+</script>
+</body>
+</html>
